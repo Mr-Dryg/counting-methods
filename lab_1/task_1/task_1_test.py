@@ -1,4 +1,4 @@
-from main import decomp, solve, permut, det, inv
+from .main import decomp, solve, permut, det, inv
 import numpy as np
 import pytest
 

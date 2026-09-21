@@ -1,4 +1,4 @@
-from main import dtma
+from .main import dtma
 import numpy as np
 import pytest
 
