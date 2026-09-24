@@ -76,13 +76,21 @@ def inv(A: list[list[float]]) -> list[list[float]]:
     return X
 
 if __name__ == "__main__":
-    n = int(input("n = "))
-    print("A:")
-    A = [list(map(float, input().split(" "))) for _ in range(n)]
+    # n = int(input("n = "))
+    n = 4
+    # print("A:")
+    # A = [list(map(float, input().split(" "))) for _ in range(n)]
+    A = [
+        [-5, 2, 4, -4],
+        [-4, 9, -7, -5],
+        [0, -5, 6, 7, ],
+        [4, 8, -6, -6]
+    ]
     L, U, P, p = decomp(A)
-    print("b:")
-    b = list(map(float, input().split(" ")))
+    # print("b:")
+    # b = list(map(float, input().split(" ")))
+    b = [57, -23, 23, -20]
     x = solve(L, U, permut(b, P))
     print("x: ", x)
     print("det(A): ", det(U, p))
-    print("A^-1: ", inv(A))
+    print("A^-1:\n", '\n'.join([str(line) for line in inv(A)]))

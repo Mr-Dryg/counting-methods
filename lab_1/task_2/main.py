@@ -35,10 +35,19 @@ def dtma(A: list[list[float]], d: list[float]) -> list[float]:
     return x
 
 if __name__ == "__main__":
-    n = int(input("n = "))
+    # n = int(input("n = "))
+    n = 5
     print("A:")
-    A = [list(map(float, input().split(" "))) for _ in range(n)]
+    # A = [list(map(float, input().split(" "))) for _ in range(n)]
+    A = [
+        [6, 3, 0, 0, 0],
+        [-9, -17, 3, 0, 0],
+        [0, -3, 12, 7, 0],
+        [0, 0, 2, -9, -6],
+        [0, 0, 0, -4, 5]
+    ]
     print("b:")
-    b = list(map(float, input().split(" ")))
+    # b = list(map(float, input().split(" ")))
+    b = [0, -99, -107, 5, -6]
     x = dtma(A, b)
     print("x: ", x)
