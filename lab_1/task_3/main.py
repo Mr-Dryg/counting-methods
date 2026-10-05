@@ -7,7 +7,7 @@ parent_dir = os.path.dirname(current_dir)
 if parent_dir not in sys.path:
     sys.path.insert(0, parent_dir)
 
-from math import sqrt
+from math import log10, ceil
 
 import task_1
 
@@ -23,10 +23,9 @@ def calc_betta_alpha(A: list[list[float]], b: list[float]) -> tuple[list[float],
 
 def norm(a: list) -> float:
     if isinstance(a[0], list):
-        total_sum = sum(x * x for row in a for x in row)
+        return max(sum(abs(x) for x in row) for row in a)
     else:
-        total_sum = sum(x * x for x in a)
-    return sqrt(total_sum)    
+        return max(abs(x) for x in a)
 
 def dot(alpha: list[list[float]], x: list) -> list:
     if isinstance(x[0], list):
@@ -42,6 +41,8 @@ def simple_iter(A: list[list[float]], b: list[float], eps: float) -> list[tuple[
     n = len(A)
     betta, alpha = calc_betta_alpha(A, b)
     norm_alpha = norm(alpha)
+    k = (log10(eps) + log10(1 - norm_alpha) - log10(norm(betta))) / log10(norm_alpha)
+    print("K = ", ceil(k))
     kf = norm_alpha / (1 - norm_alpha) if norm_alpha < 1 else 1
     k = 0
     x_prev = []
@@ -76,6 +77,8 @@ def seidel(A: list[list[float]], b: list[float], eps: float) -> list[tuple[int, 
     betta = dot(I_minus_B_inv, betta)
     alpha = dot(I_minus_B_inv, C)
     norm_alpha = norm(alpha)
+    k = (log10(eps) + log10(1 - norm_alpha) - log10(norm(betta))) / log10(norm(C))
+    print("K (Зейдель) = ", ceil(k))
     kf = norm(C) / (1 - norm_alpha) if norm_alpha < 1 else 1
     k = 0
     x_prev = []
@@ -91,12 +94,20 @@ def seidel(A: list[list[float]], b: list[float], eps: float) -> list[tuple[int, 
             return res
 
 if __name__ == "__main__":
-    n = int(input("n = "))
-    print("A:")
-    A = [list(map(float, input().split(" "))) for _ in range(n)]
-    print("b:")
-    b = list(map(float, input().split(" ")))
-    eps = float(input("eps = "))
+    # n = int(input("n = "))
+    n = 3
+    # print("A:")
+    # A = [list(map(float, input().split(" "))) for _ in range(n)]
+    A = [
+        [10, 1, 1],
+        [2, 10, 1],
+        [2, 2, 10]
+    ]
+    # print("b:")
+    # b = list(map(float, input().split(" ")))
+    b = [12, 13, 14]
+    # eps = float(input("eps = "))
+    eps = 0.01
 
     print("simple iter:")
     iters = simple_iter(A, b, eps)
