@@ -18,9 +18,9 @@ def QR(A: NDArray[np.float64]) -> tuple[NDArray[np.float64], NDArray[np.float64]
         d = v.T @ v
         H_k = np.eye(A.shape[0])
         H_k -= 2 * v @ v.T / d if d != 0 else 0
-        H = H_k @ H
+        H = H @ H_k
         A = H_k @ A
-    return H.T, A
+    return H, A
 
 def eigenvalue_k(A: NDArray[np.float64], eps: float) -> NDArray[np.complex128]:
     n = A.shape[0]
