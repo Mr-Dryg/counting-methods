@@ -1,3 +1,5 @@
+import numpy as np
+from numpy.typing import NDArray
 import copy
 
 def get_I(n: int) -> list[list[float]]:
@@ -74,6 +76,11 @@ def inv(A: list[list[float]]) -> list[list[float]]:
         for i in range(n):
             X[i][j] = x[i]
     return X
+
+def lu_solution(A: NDArray, b: NDArray) -> NDArray:
+    L, U, P, p = decomp(A.tolist())
+    x = solve(L, U, permut(b.tolist(), P))
+    return np.array(x)
 
 if __name__ == "__main__":
     # n = int(input("n = "))

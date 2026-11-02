@@ -1,1 +1,1 @@
-from .main import inv, get_I
+from .main import inv, get_I, lu_solution
