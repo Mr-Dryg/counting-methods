@@ -31,7 +31,7 @@ def simple(fi: Callable[..., NDArray], x_0: NDArray, q: float, eps: float) -> li
     k = 0
     while True:
         fi_x = fi(*x_k)
-        eps_k = max(*[abs(fi_x[i] - x_k[i]) for i in range(x_k.shape[0])])
+        eps_k = q / (q - 1) * max(*[abs(fi_x[i] - x_k[i]) for i in range(x_k.shape[0])])
         iters.append((k, x_k, fi_x, eps_k))
         if eps_k <= eps:
             iters.append((k+1, fi_x, np.array([0.0, 0.0]), 0.0))
@@ -78,20 +78,29 @@ if __name__ == "__main__":
 
     print()
 
-    fi = lambda x1, x2: np.array([
-        np.sqrt(1 + 6 * x2),
-        np.log(6 - x1) / x1
-    ])
-    x_0 = np.array([2.2, 0.6])
-
-    def get_q_value(x1, x2):
-        J_fi = np.array([
-            [0, 3 / np.sqrt(1 + 6 * x2)],
-            [-(x1 / (6 - x1) + np.log(6 - x1)) / x1**2, 0]
+    def F(x1, x2):
+        return np.array([
+            np.exp(x1 * x2) + x1 - 6,
+            x1**2 - 6 * x2 - 1
         ])
 
-        # Обычная бесконечная норма (максимальная сумма модулей по строкам)
-        return np.linalg.norm(J_fi, ord=np.inf)
+    def J_F(x1, x2):
+        e = np.exp(x1 * x2)
+        return np.array([
+            [x2 * e + 1, x1 * e],
+            [2 * x1, -6]
+        ])
+
+    x_0 = np.array([2.0, 0.6])
+
+    Lam = np.linalg.inv(J_F(*x_0))
+    print(Lam)
+
+    fi = lambda x1, x2: np.array([x1, x2]) - Lam @ F(x1, x2)
+
+    def get_q_value(x1, x2):
+        # Бесконечная норма (максимальная сумма модулей по строкам)
+        return np.linalg.norm(np.eye(2) - Lam @ J_F(x1, x2), ord=np.inf)
 
     q = get_q_value(*x_0)
     print(f"Константа сходимости q в точке {x_0} равна: {q:.4f}")
