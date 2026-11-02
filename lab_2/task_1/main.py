@@ -50,8 +50,18 @@ if __name__ == "__main__":
     # x_0 = 0.475
 
     fi = lambda x: (1 - x*log10(x+2))**0.5
-    q = 0.44
+    a, b = 0.0, 1.0
+
+    dfi = lambda x: -(log10(x + 2) + x / ((x + 2) * log(10))) / (2 * fi(x))
+
+    xs = a
+    q = abs(dfi(xs))
+    while xs <= b:
+        xs += 1e-4
+        q = max(q, abs(dfi(xs)))
     x_0 = 0.5
+
+    print(f"\nq = {q}")
 
     iters = simple(fi, x_0, q, eps)
     print(f"\n{'k':4} | {'x_k':10} | {'fi(x_k)':10} | {'eps_k':10}")
