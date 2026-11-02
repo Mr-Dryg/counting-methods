@@ -11,17 +11,16 @@ def sign(x: float) -> int:
 
 def QR(A: NDArray[np.float64]) -> tuple[NDArray[np.float64], NDArray[np.float64]]:
     H = np.eye(A.shape[0])
-    for k in range(A.shape[0]):
-        v = A[:, k].copy()
+    for k in range(A.shape[0] - 1):
+        v = A[:, k:k+1].copy()
         v[:k] = 0
-        v[k] += sign(A[k, k]) * np.linalg.norm(v[k:])
-        v = v.reshape(-1, 1)
+        v[k] += sign(v[k]) * np.linalg.norm(v[k:])
         d = v.T @ v
         H_k = np.eye(A.shape[0])
         H_k -= 2 * v @ v.T / d if d != 0 else 0
-        H = H_k @ H
+        H = H @ H_k
         A = H_k @ A
-    return H.T, A
+    return H, A
 
 def eigenvalue_k(A: NDArray[np.float64], eps: float) -> NDArray[np.complex128]:
     n = A.shape[0]
@@ -45,18 +44,15 @@ def eigenvalue_k(A: NDArray[np.float64], eps: float) -> NDArray[np.complex128]:
             j += 2
     return np.array(res)
 
-def eigenvalue(A: NDArray[np.float64], eps: float) -> tuple[NDArray[np.complex128], list[int, float, float]]:
+def eigenvalue(A_k: NDArray[np.float64], eps: float) -> tuple[NDArray[np.complex128], list[int, float, float]]:
     k = 0
     iters = []
-    H_T, _ = QR(A)
-    A_k = H_T @ A @ H_T.T
     res_k = eigenvalue_k(A_k, eps)
     while True:
         k += 1
         Q, R = QR(A_k)
         A_k_next = R @ Q
         res_k_next = eigenvalue_k(A_k_next, eps)
-        # eps_1 = np.sqrt(sum([np.sum(A_k_next[m+1:, m] ** 2) for m in range(A.shape[0])]))
         # eps_1 = all([np.sqrt(np.sum(A_k_next[m+1:, m] ** 2)) <= eps for m in range(A.shape[0])])
         eps_1 = np.linalg.norm(A_k_next - A_k)
         eps_2 = np.linalg.norm(res_k_next - res_k)
